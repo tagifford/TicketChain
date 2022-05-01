@@ -4,10 +4,11 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './css/Style.css';
 import { ethers } from "ethers";
 
-function Wallet() {
+function Wallet(props) {
   //found a lot of this code here: https://dev.to/yakult/a-tutorial-build-dapp-with-hardhat-react-and-ethersjs-1gmi 
-  const [currentAccount, setCurrentAccount ] = useState();
   const [balance, setBalance ] = useState();
+  let currentAccount = props.currentAccount;
+  let setCurrentAccount = props.setCurrentAccount;
 
   useEffect(() => {
     if(!currentAccount || !ethers.utils.isAddress(currentAccount)) return
@@ -147,6 +148,8 @@ function Welcome() {
 
 
 function Homepage() {
+  const [currentAccount, setCurrentAccount ] = useState();
+
   return(
     <div className="navbar">
       <Router>
@@ -160,7 +163,7 @@ function Homepage() {
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/event" element={<Event />} />
-          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/wallet" element={<Wallet currentAccount={currentAccount} setCurrentAccount={setCurrentAccount}/>} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/purchase" element={<Purchase />} />
         </Routes>
