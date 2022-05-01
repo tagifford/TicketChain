@@ -5,4 +5,8 @@
 
 2. Run npm install from the root of the project.
 
-3. 
+# running contract
+
+1. run `npx hardhat node` in a terminal to run a local node.
+
+2. run `npx hardhat run --network localhost scripts/deploy.js`
