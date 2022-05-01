@@ -1,3 +1,5 @@
+const { ethers } = require("hardhat");
+
 async function main () {
     const Event = await ethers.getContractFactory('Event');
     console.log('Deploying Event...');
