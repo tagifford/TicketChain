@@ -1,11 +1,67 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './css/Style.css';
+import { ethers } from "ethers";
 
 function Wallet() {
+  //found a lot of this code here: https://dev.to/yakult/a-tutorial-build-dapp-with-hardhat-react-and-ethersjs-1gmi 
+  const [currentAccount, setCurrentAccount ] = useState();
+  const [balance, setBalance ] = useState();
+
+  useEffect(() => {
+    if(!currentAccount || !ethers.utils.isAddress(currentAccount)) return
+    //client side code
+    if(!window.ethereum) return
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    provider.getBalance(currentAccount).then((result)=>{
+      setBalance(ethers.utils.formatEther(result))
+    })
+
+  },[currentAccount])
+
+  const onClickConnect = () => {
+    //client side code
+    if(!window.ethereum) {
+      console.log("please install MetaMask")
+      return
+    }
+
+    //we can do it using ethers.js
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    // MetaMask requires requesting permission to connect users accounts
+    provider.send("eth_requestAccounts", [])
+    .then((accounts)=>{
+      if(accounts.length>0) setCurrentAccount(accounts[0])
+    })
+    .catch((e)=>console.log(e))
+  }
+
+  const onClickDisconnect = () => {
+    console.log("onClickDisconnect")
+    setBalance(undefined)
+    setCurrentAccount(undefined)
+  }
+
   return (
     <div className="header">
-      <button className="btn">Get a wallet</button>
+      <div>
+      {currentAccount  
+          ? (<button className="btn" onClick={onClickDisconnect}>
+                <div>
+                Current Account: {currentAccount}
+                </div>
+                <div>
+                Current Balance: {balance} ETH
+                </div>
+            </button>)
+          : (<button className="btn" onClick={onClickConnect}>
+                  Connect MetaMask
+              </button>)
+        }
+      </div>
     </div>
   )
 }
@@ -95,7 +151,7 @@ function Homepage() {
     <div className="navbar">
       <Router>
         <div>
-          <Link to="/" exact className="link">Home</Link>
+          <Link to="/" exact="true" className="link">Home</Link>
           <Link to="/wallet" className="link">Get a wallet</Link>
           <Link to="/purchase" className="link">Purchase tickets</Link>
           <Link to="/event" className="link">Create an event</Link>
