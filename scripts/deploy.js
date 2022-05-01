@@ -1,10 +1,9 @@
 async function main () {
-    // We get the contract to deploy
-    const Box = await ethers.getContractFactory('Box');
-    console.log('Deploying Box...');
-    const box = await Box.deploy();
-    await box.deployed();
-    console.log('Box deployed to:', box.address);
+    const Event = await ethers.getContractFactory('Event');
+    console.log('Deploying Event...');
+    const event_instance = await Event.deploy("Test event", 10, 100);
+    await event_instance.deployed();
+    console.log('Event contract deployed to:', event_instance.address);
   }
   
   main()

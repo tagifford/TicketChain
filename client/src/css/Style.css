@@ -1,0 +1,46 @@
+.default {
+  text-align: center;
+}
+
+.header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: calc(20vh);
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.navbar {
+  background-color: #414b60;
+  text-align: center;
+  color: white;
+}
+
+.btn {
+  background-color: #414b60;
+  color: white;
+  text-transform: uppercase;
+  margin-left: 10px;
+  font-size: calc(5px + 2vmin);
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin-left: 12px;
+}
+
+.link:hover {
+  color: rgba(255, 255, 255, 0.704);
+}
+
