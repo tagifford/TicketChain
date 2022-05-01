@@ -1,10 +1,13 @@
 .default {
+  padding-top: 70px;
   text-align: center;
+  background-color: #000000;
+  min-height: 100vh;
 }
 
 .header {
-  background-color: #282c34;
-  min-height: 100vh;
+  min-height: 1vh;
+  background-color: #000000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,10 +16,25 @@
   color: white;
 }
 
+.logo {
+  min-height: 70vh;
+  min-width: 70vh;
+  background-color: #000000;
+  align-items: center;
+  justify-content: calc(20vh);
+}
+
 .content {
+  text-align: left;
+  padding: 30px;
+  min-height: 1vh;
+  background-color: #000000;
   display: flex;
   flex-direction: column;
-  text-align: left;
+  align-items: center;
+  justify-content: calc(20vh);
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 .navbar {
@@ -43,4 +61,3 @@
 .link:hover {
   color: rgba(255, 255, 255, 0.704);
 }
-
