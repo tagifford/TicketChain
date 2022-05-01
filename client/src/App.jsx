@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './css/Style.css';
 
 function Wallet() {
@@ -54,6 +54,30 @@ function Ticket(props) {
   )
 }
 
+function Purchase() {
+  return (
+    <div className="header">
+      <header>Purchase a ticket</header>
+      <form>
+        <div className="content">
+          <label>
+            Seller address:
+            <input type="text" name="seller_addr"/>
+          </label>
+          <label>
+            Buyer address:
+            <input type="text" name="buyer_addr"/>
+          </label>
+          <label>
+            Quantity:
+            <input type="text" name="quantity"/>
+          </label>
+          <input type="submit" name="purchase_submit" className="btn"/>
+        </div>
+      </form>
+    </div>
+  )
+}
 
 function Welcome() {
   return (
@@ -73,6 +97,7 @@ function Homepage() {
         <div>
           <Link to="/" exact className="link">Home</Link>
           <Link to="/wallet" className="link">Get a wallet</Link>
+          <Link to="/purchase" className="link">Purchase tickets</Link>
           <Link to="/event" className="link">Create an event</Link>
           <Link to="/tickets" className="link">View your tickets</Link>
         </div>
@@ -81,6 +106,7 @@ function Homepage() {
           <Route path="/event" element={<Event />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/tickets" element={<Tickets />} />
+          <Route path="/purchase" element={<Purchase />} />
         </Routes>
       </Router>
       </div>
