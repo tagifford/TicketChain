@@ -12,6 +12,13 @@
 
 2. run `npx hardhat run --network localhost scripts/deploy.js`
 
+# Running site
+
+1. install metamask
+
+2. connect metamask to the localhost:8545 test network.
+
+3. Add one of the hardhat test accounts to your metamask wallet
 # run the UI
 
 1. cd into client

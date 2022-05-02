@@ -1,12 +1,70 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import './css/Style.css';
+import { ethers } from "ethers";
 import "./css/Style.css";
 import logo from "./logo.png";
 
-function Wallet() {
+function Wallet(props) {
+  //found a lot of this code here: https://dev.to/yakult/a-tutorial-build-dapp-with-hardhat-react-and-ethersjs-1gmi 
+  const [balance, setBalance ] = useState();
+  let currentAccount = props.currentAccount;
+  let setCurrentAccount = props.setCurrentAccount;
+
+  useEffect(() => {
+    if(!currentAccount || !ethers.utils.isAddress(currentAccount)) return
+    //client side code
+    if(!window.ethereum) return
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    provider.getBalance(currentAccount).then((result)=>{
+      setBalance(ethers.utils.formatEther(result))
+    })
+
+  },[currentAccount])
+
+  const onClickConnect = () => {
+    //client side code
+    if(!window.ethereum) {
+      console.log("please install MetaMask")
+      return
+    }
+
+    //we can do it using ethers.js
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    // MetaMask requires requesting permission to connect users accounts
+    provider.send("eth_requestAccounts", [])
+    .then((accounts)=>{
+      if(accounts.length>0) setCurrentAccount(accounts[0])
+    })
+    .catch((e)=>console.log(e))
+  }
+
+  const onClickDisconnect = () => {
+    console.log("onClickDisconnect")
+    setBalance(undefined)
+    setCurrentAccount(undefined)
+  }
+
   return (
-    <div className="default">
-      <button className="btn">Get a wallet</button>
+    <div className="header">
+      <div>
+      {currentAccount  
+          ? (<button className="btn" onClick={onClickDisconnect}>
+                <div>
+                Current Account: {currentAccount}
+                </div>
+                <div>
+                Current Balance: {balance} ETH
+                </div>
+            </button>)
+          : (<button className="btn" onClick={onClickConnect}>
+                  Connect MetaMask
+              </button>)
+        }
+      </div>
     </div>
   );
 }
@@ -90,6 +148,7 @@ function Welcome() {
 }
 
 function Homepage() {
+  const [currentAccount, setCurrentAccount ] = useState();
   return (
     <div className="navbar">
       <Router>
@@ -113,7 +172,7 @@ function Homepage() {
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/event" element={<Event />} />
-          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/wallet" element={<Wallet currentAccount={currentAccount} setCurrentAccount={setCurrentAccount}/>} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/purchase" element={<Purchase />} />
         </Routes>
