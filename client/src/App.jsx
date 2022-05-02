@@ -5,6 +5,7 @@ import './css/Style.css';
 import { ethers } from "ethers";
 import "./css/Style.css";
 import logo from "./logo.png";
+import EventContract from './artifacts/contracts/Event.sol/Event.json';
 
 function Wallet(props) {
   //found a lot of this code here: https://dev.to/yakult/a-tutorial-build-dapp-with-hardhat-react-and-ethersjs-1gmi 
@@ -32,7 +33,7 @@ function Wallet(props) {
     }
 
     //we can do it using ethers.js
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     // MetaMask requires requesting permission to connect users accounts
     provider.send("eth_requestAccounts", [])
@@ -69,7 +70,28 @@ function Wallet(props) {
   );
 }
 
-function Event() {
+function Event(props) {
+
+  const [event_name, set_event_name ] = useState();
+  const [num_tickets, set_num_tickets ] = useState();
+  const [ticket_price, set_ticket_price ] = useState();
+
+  async function handleSubmit(event) {
+    if(props.currentAccount === undefined){
+      console.log("Not logged in to wallet!");
+    }
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner(); 
+    //console.log(props.currentAccount);
+    const eventFactory = new ethers.ContractFactory(EventContract.abi, EventContract.bytecode, signer);
+    const eventContract = await eventFactory.deploy(event_name, num_tickets, ticket_price);
+    console.log(eventContract);
+    const eventAddress = eventContract.address;
+    document.cookie = `Event_${event_name}=${eventAddress};expires=Thu, 25 May 22 12:00:00 UTC;`;
+    console.log(document.cookie);
+  }
+
   return (
     <div className="default">
       <div className="header">Create an event</div>
@@ -77,15 +99,15 @@ function Event() {
         <div className="content">
           <label>
             Event name:
-            <input type="text" name="event_name" />
+            <input type="text" name="event_name" onChange={(event)=>set_event_name(event.target.value)}/>
           </label>
           <label>
             Number of tickets:
-            <input type="text" name="num_tickets" />
+            <input type="text" name="num_tickets" onChange={(event)=>set_num_tickets(event.target.value)}/>
           </label>
           <label>
             Ticket price:
-            <input type="text" name="ticket_price" />
+            <input type="text" name="ticket_price" onChange={(event)=>set_ticket_price(event.target.value)}/>
           </label>
           <br></br>
           <input type="submit" name="submit" className="btn" />
@@ -94,8 +116,6 @@ function Event() {
     </div>
   );
 }
-
-async function handleSubmit(event) {}
 
 function Tickets() {
   return (
@@ -153,7 +173,7 @@ function Homepage() {
     <div className="navbar">
       <Router>
         <div>
-          <Link to="/" exact className="link">
+          <Link to="/" exact="true" className="link">
             Home
           </Link>
           <Link to="/wallet" className="link">
@@ -171,7 +191,7 @@ function Homepage() {
         </div>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          <Route path="/event" element={<Event />} />
+          <Route path="/event" element={<Event currentAccount={currentAccount}/>} />
           <Route path="/wallet" element={<Wallet currentAccount={currentAccount} setCurrentAccount={setCurrentAccount}/>} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/purchase" element={<Purchase />} />
