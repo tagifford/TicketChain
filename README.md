@@ -1,6 +1,7 @@
 # TicketChain
 
 # Smart Contract Development
+
 1. Make sure you have `node, npm, and npx` installed. You can use nvm to install.
 
 2. Run npm install from the root of the project.
@@ -18,3 +19,7 @@
 2. connect metamask to the localhost:8545 test network.
 
 3. Add one of the hardhat test accounts to your metamask wallet
+# run the UI
+
+1. cd into client
+2. run `npm install && npm start`
