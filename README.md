@@ -12,6 +12,8 @@
 
 2. run `npx hardhat run --network localhost scripts/deploy.js`
 
+3. run `scripts/build.sh`
+
 # Running site
 
 1. install metamask
