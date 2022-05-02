@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 contract Event {
     mapping (address => uint256) public ticketHolders;
     string public event_name;
+    uint32 public ticket_price; //ticket price in wei
     uint64 private total_tickets;
     uint64 private remaining_tickets;
-    uint32 private ticket_price; //ticket price in wei
     address payable owner;
 
     constructor(string memory _event_name, uint64 _num_tickets, uint32 _ticket_price) {

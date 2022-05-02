@@ -1,1 +1,1 @@
-npx hardhat node > accounts.txt
+npx hardhat node

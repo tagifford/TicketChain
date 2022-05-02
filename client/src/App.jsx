@@ -88,7 +88,7 @@ function Event(props) {
     const eventContract = await eventFactory.deploy(event_name, num_tickets, ticket_price);
     console.log(eventContract);
     const eventAddress = eventContract.address;
-    document.cookie = `Event_${event_name}=${eventAddress};expires=Thu, 25 May 22 12:00:00 UTC;`;
+    document.cookie = `Event_${event_name}=${eventAddress}`;
     console.log(document.cookie);
   }
 
@@ -134,13 +134,14 @@ function Ticket(props) {
   );
 }
 
-function Purchase() {
+function Purchase(props) {
+  const [random, setRandom ] = useState();
   const [event_address, set_event_address ] = useState();
   const [num_tickets, set_num_tickets ] = useState();
 
   function getEvents(){
     const cookies = document.cookie;
-    const parsed_cookies = cookies.split(';');
+    const parsed_cookies = cookies.split('; ');
     let events = {}
     for(let cookie of parsed_cookies){
         if(cookie.startsWith('Event_')){
@@ -152,31 +153,59 @@ function Purchase() {
     }
     return events;
   }
-  const events = getEvents();
-  const event_items = Object.keys(events).map(event_name => {
-    return (
-      <li key={event_name}>
-        Event Name: {event_name}, Event Address: {events[event_name]}
-      </li>
-    );
-  });
+  async function handleSubmit(event){
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = await provider.getSigner(); 
+    const addr = await signer.getAddress();
+    
+    const eventFactory = new ethers.Contract("Event", EventContract.abi, signer);
+    const eventContract = await eventFactory.attach(event_address);
+    console.log(eventContract);
+
+    //const ticket_price = await eventContract.ticket_price();
+    const ticket_price = 2000;
+    console.log("ticket price: " + ticket_price)
+    const total_val = ticket_price*num_tickets;
+    console.log(total_val);
+    //const send_val = ethers.utils.formatUnits(total_val,"ether");
+
+    const buyRet = await eventContract.buyTickets(addr, num_tickets, {value:total_val});
+    console.log("bought tickets" + buyRet);
+  }
+
+  function renderEvents(randomVar){
+    const events = getEvents();
+    const event_items = Object.keys(events).map(event_name => {
+      return (
+        <li key={event_name}>
+          Event Name: {event_name}, Event Address: {events[event_name]}
+        </li>
+      );
+    });
+    return event_items;
+  }
+
   return (
     <div className="default">
+      <button onClick={(event)=>(setRandom(Date.now()))}>
+        refresh events
+      </button>
       <ul>
-      {event_items}
+      {renderEvents(random)}
       </ul>
       <div className="header">Purchase a ticket </div>
-      <form className="content">
+      <form className="content" onSubmit={handleSubmit}>
         <label>
-          Seller address:
-          <input type="text" name="event_name" />
+          Event Address:
+          <input type="text" name="event_name" onChange={(event)=>set_event_address(event.target.value)}/>
         </label>
         <label>
           Number of Tickets:
-          <input type="text" name="num_tickets" />
+          <input type="text" name="num_tickets" onChange={(event)=>set_num_tickets(event.target.value)}/>
         </label>
         <br></br>
-        <input type="submit" name="purchase_submit" className="btn" />
+        <input type="submit" name="purchase_submit" className="btn"/>
       </form>
     </div>
   );
@@ -218,7 +247,7 @@ function Homepage() {
           <Route path="/event" element={<Event currentAccount={currentAccount}/>} />
           <Route path="/wallet" element={<Wallet currentAccount={currentAccount} setCurrentAccount={setCurrentAccount}/>} />
           <Route path="/tickets" element={<Tickets />} />
-          <Route path="/purchase" element={<Purchase />} />
+          <Route path="/purchase" element={<Purchase currentAccount={currentAccount}/>} />
         </Routes>
       </Router>
     </div>
