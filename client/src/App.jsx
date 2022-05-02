@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './css/Style.css';
 import { ethers } from "ethers";
+import "./css/Style.css";
+import logo from "./logo.png";
 
 function Wallet(props) {
   //found a lot of this code here: https://dev.to/yakult/a-tutorial-build-dapp-with-hardhat-react-and-ethersjs-1gmi 
@@ -146,6 +148,7 @@ function Welcome() {
 }
 
 function Homepage() {
+  const [currentAccount, setCurrentAccount ] = useState();
   return (
     <div className="navbar">
       <Router>
