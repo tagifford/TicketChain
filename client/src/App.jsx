@@ -123,10 +123,11 @@ function Tickets(props) {
 
   const [event_address, set_event_address ] = useState();
   const [num_tickets, set_num_tickets ] = useState();
+  const [event_items, set_event_items] = useState([]);
 
   function getEvents(){
     const cookies = document.cookie;
-    const parsed_cookies = cookies.split(';');
+    const parsed_cookies = cookies.split('; ');
     let events = {}
     for(let cookie of parsed_cookies){
       
@@ -139,52 +140,105 @@ function Tickets(props) {
     }
     return events;
   }
+
   const events = getEvents();
-  const event_items = Object.keys(events).map(event_name => {
-    return (
-      <li key={event_name}>
-        <Ticket name={event_name}></Ticket>
-        {/* Event Name: {event_name}, Event Address: {events[event_name]} */}
-      </li>
-    );
+  async function has_tickets(event_name){
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner(); 
+    const addr = await signer.getAddress();
+    
+    const eventFactory = new ethers.Contract("Event", EventContract.abi, signer);
+    const eventContract = await eventFactory.attach(events[event_name]);
+    //console.log(eventContract);
+    
+    const numTickets = await eventContract.ticketHolders(addr);
+    return numTickets > 0;
+  }
+
+  //console.log("event_items: " + event_items);
+  //console.log(events);
+  Object.keys(events).map(async (event_name)=> {
+    let hasTicket = await has_tickets(event_name);
+    if(hasTicket){
+      let ret_val = (
+        <li key={event_name}>
+          <Ticket name={event_name}></Ticket>
+          {/* Event Name: {event_name}, Event Address: {events[event_name]} */}
+        </li>
+      );
+      set_event_items(ret_val);
+      return null;
+    }
   });
 
   return (
-    <div className="default">
-      <ul>
+    <div>
+      <div>
+        <Transfer events={events}/>
+      </div>
+      <div>
         {event_items}
-      </ul>
+      </div>
     </div>
+
+    // <div>
+    //   <div className="default">
+    //     <ul>
+    //       {event_items}
+    //     </ul>
+    //   </div>
+    //   <div>
+    //       <Transfer events={events}/>
+    //   </div>
+    //   <div>
+    //     HI
+    //   </div>
+    // </div>
   );
 }
 
 function Ticket(props) {
-
-  async function handleSubmit(){ 
-    Transfer(props)
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="content">
-      <a className="header">{props.name}</a>
-      <input type="submit" name="transfer" value="Transfer" className="btn" />
-    </form>
-  );
+  return null;
 }
 
 function Transfer(props) {
+  const [event_name, set_event_name ] = useState();
+  const [rec_addr, set_rec_addr ] = useState();
+  const [quantity, set_quantity] = useState([]);
+  
+  async function handleSubmit(event){
+    event.preventDefault();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = await provider.getSigner(); 
+    const addr = await signer.getAddress();
+    
+    const eventFactory = new ethers.Contract("Event", EventContract.abi, signer);
+    const contract_addr = props.events[event_name];
+    const eventContract = await eventFactory.attach(contract_addr);
+    console.log(eventContract);
+    //await eventContract.event_name();
+    //const ticket_price = await eventContract.ticket_price();
+
+    const transferRet = await eventContract.transfer(addr,rec_addr,quantity);
+    console.log("bought tickets" + transferRet);
+  }
+
   return (
     <div className="default">
-      <div className="header">Purchase {props.name}</div>
-      <form>
+      <div className="header">Transfer {props.name}</div>
+      <form onSubmit={handleSubmit}>
         <div className="content">
           <label>
-            Buyer address:
-            <input type="text" name="buyer_addr"/>
+            Event Name:
+            <input type="text" name="event_name"  onChange={(event)=>set_event_name(event.target.value)}/>
+          </label>
+          <label>
+            Recipient address:
+            <input type="text" name="buyer_addr"  onChange={(event)=>set_rec_addr(event.target.value)}/>
           </label>
           <label>
             Quantity:
-            <input type="text" name="quantity"/>
+            <input type="text" name="quantity"  onChange={(event)=>set_quantity(event.target.value)}/>
           </label>
           <input type="submit" name="purchase_submit" className="btn"/>
         </div>
