@@ -117,20 +117,61 @@ function Event(props) {
   );
 }
 
-function Tickets() {
+function Tickets(props) {
+
+  const [event_address, set_event_address ] = useState();
+  const [num_tickets, set_num_tickets ] = useState();
+
+  function getEvents(){
+    const cookies = document.cookie;
+    const parsed_cookies = cookies.split(';');
+    let events = {}
+    for(let cookie of parsed_cookies){
+        if(cookie.startsWith('Event_')){
+          let split = cookie.split('=');
+          let e_name = split[0];
+          let e_address = split[1];
+          events[e_name] = e_address;
+        }
+    }
+    return events;
+  }
+  const events = getEvents();
+  const event_items = Object.keys(events).map(event_name => {
+    return (
+      <li key={event_name}>
+        <Ticket name={event_name}></Ticket>
+        {/* Event Name: {event_name}, Event Address: {events[event_name]} */}
+      </li>
+    );
+  });
+
   return (
     <div className="default">
-      <Ticket name="Example Event" />
+      <ul>
+        {event_items}
+      </ul>
     </div>
   );
 }
 
 function Ticket(props) {
+
+  async function handleSubmit(){
+
+    if(props.currentAccount === undefined){
+      console.log("Not logged in to wallet!");
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner(); 
+
+  }
+
   return (
-    <div className="content">
+    <form onSubmit={handleSubmit} className="content">
       <a className="header">{props.name}</a>
       <input type="submit" name="transfer" value="Transfer" className="btn" />
-    </div>
+    </form>
   );
 }
 
@@ -140,7 +181,7 @@ function Purchase() {
 
   function getEvents(){
     const cookies = document.cookie;
-    const parsed_cookies = cookies.split(';');
+    const parsed_cookies = cookies.split('; ');
     let events = {}
     for(let cookie of parsed_cookies){
         if(cookie.startsWith('Event_')){
