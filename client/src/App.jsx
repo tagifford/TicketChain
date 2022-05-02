@@ -135,21 +135,45 @@ function Ticket(props) {
 }
 
 function Purchase() {
+  const [event_address, set_event_address ] = useState();
+  const [num_tickets, set_num_tickets ] = useState();
+
+  function getEvents(){
+    const cookies = document.cookie;
+    const parsed_cookies = cookies.split(';');
+    let events = {}
+    for(let cookie of parsed_cookies){
+        if(cookie.startsWith('Event_')){
+          let split = cookie.split('=');
+          let e_name = split[0];
+          let e_address = split[1];
+          events[e_name] = e_address;
+        }
+    }
+    return events;
+  }
+  const events = getEvents();
+  const event_items = Object.keys(events).map(event_name => {
+    return (
+      <li key={event_name}>
+        Event Name: {event_name}, Event Address: {events[event_name]}
+      </li>
+    );
+  });
   return (
     <div className="default">
+      <ul>
+      {event_items}
+      </ul>
       <div className="header">Purchase a ticket </div>
       <form className="content">
         <label>
           Seller address:
-          <input type="text" name="seller_addr" />
+          <input type="text" name="event_name" />
         </label>
         <label>
-          Buyer address:
-          <input type="text" name="buyer_addr" />
-        </label>
-        <label>
-          Quantity:
-          <input type="text" name="quantity" />
+          Number of Tickets:
+          <input type="text" name="num_tickets" />
         </label>
         <br></br>
         <input type="submit" name="purchase_submit" className="btn" />
