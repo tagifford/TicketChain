@@ -221,15 +221,15 @@ function Purchase(props) {
     const eventFactory = new ethers.Contract("Event", EventContract.abi, signer);
     const eventContract = await eventFactory.attach(event_address);
     console.log(eventContract);
-
+    //await eventContract.event_name();
     //const ticket_price = await eventContract.ticket_price();
     const ticket_price = 2000;
-    console.log("ticket price: " + ticket_price)
+    console.log("ticket price: " + ticket_price);
     const total_val = ticket_price*num_tickets;
-    console.log(total_val);
-    //const send_val = ethers.utils.formatUnits(total_val,"ether");
+    console.log("total cost: " + total_val);
+    const send_val = ethers.utils.formatUnits(total_val,"ether");
 
-    const buyRet = await eventContract.buyTickets(addr, num_tickets, {value:total_val});
+    const buyRet = await eventContract.buyTickets(addr, num_tickets, {value: total_val + 100});
     console.log("bought tickets" + buyRet);
   }
 
