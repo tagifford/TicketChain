@@ -50,6 +50,7 @@ function Wallet(props) {
   }
 
   return (
+    <div className="default">
     <div className="header">
       <div>
       {currentAccount  
@@ -66,6 +67,7 @@ function Wallet(props) {
               </button>)
         }
       </div>
+    </div>
     </div>
   );
 }
@@ -127,6 +129,7 @@ function Tickets(props) {
     const parsed_cookies = cookies.split(';');
     let events = {}
     for(let cookie of parsed_cookies){
+      
         if(cookie.startsWith('Event_')){
           let split = cookie.split('=');
           let e_name = split[0];
@@ -157,14 +160,8 @@ function Tickets(props) {
 
 function Ticket(props) {
 
-  async function handleSubmit(){
-
-    if(props.currentAccount === undefined){
-      console.log("Not logged in to wallet!");
-    }
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner(); 
-
+  async function handleSubmit(){ 
+    Transfer(props)
   }
 
   return (
@@ -173,6 +170,27 @@ function Ticket(props) {
       <input type="submit" name="transfer" value="Transfer" className="btn" />
     </form>
   );
+}
+
+function Transfer(props) {
+  return (
+    <div className="default">
+      <div className="header">Purchase {props.name}</div>
+      <form>
+        <div className="content">
+          <label>
+            Buyer address:
+            <input type="text" name="buyer_addr"/>
+          </label>
+          <label>
+            Quantity:
+            <input type="text" name="quantity"/>
+          </label>
+          <input type="submit" name="purchase_submit" className="btn"/>
+        </div>
+      </form>
+    </div>
+  )
 }
 
 function Purchase(props) {
@@ -287,8 +305,9 @@ function Homepage() {
           <Route path="/" element={<Welcome />} />
           <Route path="/event" element={<Event currentAccount={currentAccount}/>} />
           <Route path="/wallet" element={<Wallet currentAccount={currentAccount} setCurrentAccount={setCurrentAccount}/>} />
-          <Route path="/tickets" element={<Tickets />} />
+          <Route path="/tickets" element={<Tickets currentAccount={currentAccount} />} />
           <Route path="/purchase" element={<Purchase currentAccount={currentAccount}/>} />
+          <Route path="/transfer" element={<Transfer currentAccount={currentAccount}/>} />
         </Routes>
       </Router>
     </div>
